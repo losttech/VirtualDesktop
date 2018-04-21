@@ -14,13 +14,5 @@ namespace WindowsDesktop
 
 			return view;
 		}
-
-		public static string GetAppId(IntPtr hWnd)
-		{
-			string appId;
-			hWnd.GetApplicationView().GetAppUserModelId(out appId);
-
-			return appId;
-		}
 	}
 }
