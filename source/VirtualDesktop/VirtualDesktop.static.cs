@@ -14,7 +14,7 @@ namespace WindowsDesktop
 		private static readonly ConcurrentDictionary<Guid, VirtualDesktop> _wrappers = new ConcurrentDictionary<Guid, VirtualDesktop>();
 
 		/// <summary>
-		/// Gets a value indicating whether the operating system is support virtual desktop.
+		/// Gets a value indicating whether OS virtual desktop API is supported by this library.
 		/// </summary>
 		public static bool IsSupported =>
 #if DEBUG
@@ -23,12 +23,19 @@ namespace WindowsDesktop
 			Environment.OSVersion.Version.Major >= 10 && _isSupportedInternal;
 #endif
 
+		/// <summary>
+		/// Gets a value indicating whether virtual desktop API is present in the system.
+		/// It might still not be supported. See <see cref="IsSupported"/>.
+		/// </summary>
+		public static bool IsPresent => ComObjects.VirtualDesktopManager != null;
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static Exception InitializationException { get; }
 
 		/// <summary>
 		/// Gets the virtual desktop that is currently displayed.
 		/// </summary>
+		[Obsolete(UnsupportedMessage)]
 		public static VirtualDesktop Current
 		{
 			get
@@ -63,6 +70,7 @@ namespace WindowsDesktop
 		/// Returns all the virtual desktops of currently valid.
 		/// </summary>
 		/// <returns></returns>
+		[Obsolete(UnsupportedMessage)]
 		public static VirtualDesktop[] GetDesktops()
 		{
 			VirtualDesktopHelper.ThrowIfNotSupported();
@@ -70,6 +78,7 @@ namespace WindowsDesktop
 			return GetDesktopsInternal().ToArray();
 		}
 
+		[Obsolete(UnsupportedMessage)]
 		internal static IEnumerable<VirtualDesktop> GetDesktopsInternal()
 		{
 			var desktops = ComObjects.VirtualDesktopManagerInternal.GetDesktops();
@@ -90,6 +99,7 @@ namespace WindowsDesktop
 		/// <summary>
 		/// Creates a virtual desktop.
 		/// </summary>
+		[Obsolete(UnsupportedMessage)]
 		public static VirtualDesktop Create()
 		{
 			VirtualDesktopHelper.ThrowIfNotSupported();
@@ -101,6 +111,7 @@ namespace WindowsDesktop
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete(UnsupportedMessage)]
 		public static VirtualDesktop FromComObject(IVirtualDesktop desktop)
 		{
 			VirtualDesktopHelper.ThrowIfNotSupported();
@@ -112,6 +123,7 @@ namespace WindowsDesktop
 		/// <summary>
 		/// Returns the virtual desktop of the specified identifier.
 		/// </summary>
+		[Obsolete(UnsupportedMessage)]
 		public static VirtualDesktop FromId(Guid desktopId)
 		{
 			VirtualDesktopHelper.ThrowIfNotSupported();
@@ -131,8 +143,24 @@ namespace WindowsDesktop
 		}
 
 		/// <summary>
+		/// Returns ID of the virtual desktop, where specified window is located.
+		/// </summary>
+		public static Guid? IdFromHwnd(IntPtr hwnd) {
+			VirtualDesktopHelper.ThrowIfNotSupported();
+
+			if (hwnd == IntPtr.Zero) return null;
+
+			try {
+				return ComObjects.VirtualDesktopManager.GetWindowDesktopId(hwnd);
+			} catch (COMException ex) when (ex.Match(HResult.REGDB_E_CLASSNOTREG, HResult.TYPE_E_ELEMENTNOTFOUND)) {
+				return null;
+			}
+		}
+
+		/// <summary>
 		/// Returns the virtual desktop that the specified window is located.
 		/// </summary>
+		[Obsolete("Virtual Desktop object wrapper is unsupported. Use IDs when possible. E.g. IdFromHwnd")]
 		public static VirtualDesktop FromHwnd(IntPtr hwnd)
 		{
 			VirtualDesktopHelper.ThrowIfNotSupported();

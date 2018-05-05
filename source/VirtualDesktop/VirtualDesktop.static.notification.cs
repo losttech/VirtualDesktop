@@ -16,21 +16,27 @@ namespace WindowsDesktop
 		/// <summary>
 		/// Occurs when a virtual desktop is created.
 		/// </summary>
+		[Obsolete(UnsupportedMessage)]
 		public static event EventHandler<VirtualDesktop> Created;
+		[Obsolete(UnsupportedMessage)]
 		public static event EventHandler<VirtualDesktopDestroyEventArgs> DestroyBegin;
+		[Obsolete(UnsupportedMessage)]
 		public static event EventHandler<VirtualDesktopDestroyEventArgs> DestroyFailed;
 
 		/// <summary>
 		/// Occurs when a virtual desktop is destroyed.
 		/// </summary>
+		[Obsolete(UnsupportedMessage)]
 		public static event EventHandler<VirtualDesktopDestroyEventArgs> Destroyed;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete(UnsupportedMessage)]
 		public static event EventHandler ApplicationViewChanged;
 
 		/// <summary>
 		/// Occurs when a current virtual desktop is changed.
 		/// </summary>
+		[Obsolete(UnsupportedMessage)]
 		public static event EventHandler<VirtualDesktopChangedEventArgs> CurrentChanged;
 
 

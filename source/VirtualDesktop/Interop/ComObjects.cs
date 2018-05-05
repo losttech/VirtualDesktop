@@ -13,9 +13,13 @@ namespace WindowsDesktop.Interop
 		private static readonly ConcurrentDictionary<Guid, IVirtualDesktop> _virtualDesktops = new ConcurrentDictionary<Guid, IVirtualDesktop>();
 
 		internal static IVirtualDesktopManager VirtualDesktopManager { get; private set; }
+		[Obsolete(VirtualDesktop.UnsupportedMessage)]
 		internal static VirtualDesktopManagerInternal VirtualDesktopManagerInternal { get; private set; }
+		[Obsolete(VirtualDesktop.UnsupportedMessage)]
 		internal static IVirtualDesktopNotificationService VirtualDesktopNotificationService { get; private set; }
+		[Obsolete(VirtualDesktop.UnsupportedMessage)]
 		internal static IVirtualDesktopPinnedApps VirtualDesktopPinnedApps { get; private set; }
+		[Obsolete(VirtualDesktop.UnsupportedMessage)]
 		internal static IApplicationViewCollection ApplicationViewCollection { get; private set; }
 
 		internal static void Initialize()
@@ -26,11 +30,11 @@ namespace WindowsDesktop.Interop
 				_listenerWindow.Show();
 			}
 
-			VirtualDesktopManager = GetVirtualDesktopManager();
+			VirtualDesktopManager = MissingCOMInterfaceException.Ensure(GetVirtualDesktopManager());
 			VirtualDesktopManagerInternal = VirtualDesktopManagerInternal.GetInstance();
-			VirtualDesktopNotificationService = GetVirtualDesktopNotificationService();
-			VirtualDesktopPinnedApps = GetVirtualDesktopPinnedApps();
-			ApplicationViewCollection = GetApplicationViewCollection();
+			VirtualDesktopNotificationService = MissingCOMInterfaceException.Ensure(GetVirtualDesktopNotificationService());
+			VirtualDesktopPinnedApps = MissingCOMInterfaceException.Ensure(GetVirtualDesktopPinnedApps());
+			ApplicationViewCollection = MissingCOMInterfaceException.Ensure(Interop.ApplicationViewCollection.Get());
 
 			_virtualDesktops.Clear();
 			_listener = VirtualDesktop.RegisterListener();
@@ -92,6 +96,7 @@ namespace WindowsDesktop.Interop
 			return (IVirtualDesktopManager)instance;
 		}
 
+		[Obsolete(VirtualDesktop.UnsupportedMessage)]
 		public static IVirtualDesktopNotificationService GetVirtualDesktopNotificationService()
 		{
 			var shellType = Type.GetTypeFromCLSID(CLSID.ImmersiveShell);
@@ -103,6 +108,7 @@ namespace WindowsDesktop.Interop
 			return (IVirtualDesktopNotificationService)ppvObject;
 		}
 
+		[Obsolete(VirtualDesktop.UnsupportedMessage)]
 		public static IVirtualDesktopPinnedApps GetVirtualDesktopPinnedApps()
 		{
 			var shellType = Type.GetTypeFromCLSID(CLSID.ImmersiveShell);
@@ -112,17 +118,6 @@ namespace WindowsDesktop.Interop
 			shell.QueryService(CLSID.VirtualDesktopPinnedApps, typeof(IVirtualDesktopPinnedApps).GUID, out ppvObject);
 
 			return (IVirtualDesktopPinnedApps)ppvObject;
-		}
-
-		public static IApplicationViewCollection GetApplicationViewCollection()
-		{
-			var shellType = Type.GetTypeFromCLSID(CLSID.ImmersiveShell);
-			var shell = (IServiceProvider)Activator.CreateInstance(shellType);
-
-			object ppvObject;
-			shell.QueryService(typeof(IApplicationViewCollection).GUID, typeof(IApplicationViewCollection).GUID, out ppvObject);
-
-			return (IApplicationViewCollection)ppvObject;
 		}
 
 		#endregion
