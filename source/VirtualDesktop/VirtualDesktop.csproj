@@ -91,6 +91,7 @@
     <Compile Include="Interop\HResult.cs" />
     <Compile Include="Interop\IApplicationView.cs" />
     <Compile Include="Interop\IApplicationViewCollection.cs" />
+    <Compile Include="Interop\ImmersiveShellServices.cs" />
     <Compile Include="Interop\IObjectArray.cs" />
     <Compile Include="Interop\IServiceProvider.cs" />
     <Compile Include="Interop\IVirtualDesktop.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="Interop\IVirtualDesktopNotification.cs" />
     <Compile Include="Interop\IVirtualDesktopNotificationService.cs" />
     <Compile Include="Interop\IVirtualDesktopPinnedApps.cs" />
+    <Compile Include="Interop\MissingCOMInterfaceException.cs" />
     <Compile Include="Interop\NativeMethods.cs" />
     <Compile Include="Interop\VirtualDesktopManagerInternal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

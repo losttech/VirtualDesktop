@@ -7,6 +7,7 @@ namespace WindowsDesktop
 {
 	partial class VirtualDesktop
 	{
+		[Obsolete(UnsupportedMessage)]
 		public static bool IsPinnedWindow(IntPtr hWnd)
 		{
 			VirtualDesktopHelper.ThrowIfNotSupported();
@@ -14,6 +15,7 @@ namespace WindowsDesktop
 			return ComObjects.VirtualDesktopPinnedApps.IsViewPinned(hWnd.GetApplicationView());
 		}
 
+		[Obsolete(UnsupportedMessage)]
 		public static void PinWindow(IntPtr hWnd)
 		{
 			VirtualDesktopHelper.ThrowIfNotSupported();
@@ -26,6 +28,7 @@ namespace WindowsDesktop
 			}
 		}
 
+		[Obsolete(UnsupportedMessage)]
 		public static void UnpinWindow(IntPtr hWnd)
 		{
 			VirtualDesktopHelper.ThrowIfNotSupported();
@@ -38,6 +41,7 @@ namespace WindowsDesktop
 			}
 		}
 
+		[Obsolete(UnsupportedMessage)]
 		public static bool IsPinnedApplication(string appId)
 		{
 			VirtualDesktopHelper.ThrowIfNotSupported();
@@ -45,6 +49,7 @@ namespace WindowsDesktop
 			return ComObjects.VirtualDesktopPinnedApps.IsAppIdPinned(appId);
 		}
 
+		[Obsolete(UnsupportedMessage)]
 		public static void PinApplication(string appId)
 		{
 			VirtualDesktopHelper.ThrowIfNotSupported();
@@ -55,6 +60,7 @@ namespace WindowsDesktop
 			}
 		}
 
+		[Obsolete(UnsupportedMessage)]
 		public static void UnpinApplication(string appId)
 		{
 			VirtualDesktopHelper.ThrowIfNotSupported();

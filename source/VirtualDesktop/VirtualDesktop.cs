@@ -14,12 +14,14 @@ namespace WindowsDesktop
 	[DebuggerDisplay("{Id}")]
 	public partial class VirtualDesktop
 	{
+		internal const string UnsupportedMessage = "This member is not supported and might stop working when a new version of Windows is released";
 		/// <summary>
 		/// Gets the unique identifier for the virtual desktop.
 		/// </summary>
 		public Guid Id { get; }
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete("Use desktop ID tracking instead")]
 		public IVirtualDesktop ComObject => ComObjects.GetVirtualDesktop(this.Id);
 
 		private VirtualDesktop(IVirtualDesktop comObject)
@@ -32,6 +34,7 @@ namespace WindowsDesktop
 		/// <summary>
 		/// Display the virtual desktop.
 		/// </summary>
+		[Obsolete(UnsupportedMessage)]
 		public void Switch()
 		{
 			ComObjects.VirtualDesktopManagerInternal.SwitchDesktop(this.ComObject);
@@ -40,6 +43,7 @@ namespace WindowsDesktop
 		/// <summary>
 		/// Remove the virtual desktop.
 		/// </summary>
+		[Obsolete(UnsupportedMessage)]
 		public void Remove()
 		{
 			this.Remove(GetDesktopsInternal().FirstOrDefault(x => x.Id != this.Id) ?? Create());
@@ -48,6 +52,7 @@ namespace WindowsDesktop
 		/// <summary>
 		/// Remove the virtual desktop, specifying a virtual desktop that display after destroyed.
 		/// </summary>
+		[Obsolete(UnsupportedMessage)]
 		public void Remove(VirtualDesktop fallbackDesktop)
 		{
 			if (fallbackDesktop == null) throw new ArgumentNullException(nameof(fallbackDesktop));
@@ -58,6 +63,7 @@ namespace WindowsDesktop
 		/// <summary>
 		/// Returns a virtual desktop on the left.
 		/// </summary>
+		[Obsolete(UnsupportedMessage)]
 		public VirtualDesktop GetLeft()
 		{
 			IVirtualDesktop desktop;
@@ -77,6 +83,7 @@ namespace WindowsDesktop
 		/// <summary>
 		/// Returns a virtual desktop on the right.
 		/// </summary>
+		[Obsolete(UnsupportedMessage)]
 		public VirtualDesktop GetRight()
 		{
 			IVirtualDesktop desktop;

@@ -2,6 +2,7 @@
 
 namespace WindowsDesktop.Interop
 {
+	[Obsolete(VirtualDesktop.UnsupportedMessage)]
 	internal class VirtualDesktopManagerInternal
 		: IVirtualDesktopManagerInternal10130
 		, IVirtualDesktopManagerInternal10240
