@@ -5,7 +5,9 @@ namespace WindowsDesktop.Interop
 {
 	public struct IApplicationView
 	{
+#pragma warning disable CS0169
 		IntPtr pointer;
+#pragma warning restore CS0169
 	}
 
 
