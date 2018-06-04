@@ -30,6 +30,13 @@ namespace WindowsDesktop
 			this.Id = comObject.GetID();
 		}
 
+		private VirtualDesktop(Guid id) {
+			if (id == Guid.Empty)
+				throw new ArgumentNullException(nameof(id));
+
+			this.Id = id;
+		}
+
 
 		/// <summary>
 		/// Display the virtual desktop.

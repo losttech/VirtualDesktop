@@ -10,8 +10,13 @@ namespace WindowsDesktop
 {
 	partial class VirtualDesktop
 	{
-		private static readonly bool _isSupportedInternal = true;
+		private static readonly bool _isSupportedInternal;
 		private static readonly ConcurrentDictionary<Guid, VirtualDesktop> _wrappers = new ConcurrentDictionary<Guid, VirtualDesktop>();
+
+		/// <summary>
+		/// Returns <c>true</c>, if the minimal stable functionality is supported
+		/// </summary>
+		public static bool HasMinimalSupport => ComObjects.VirtualDesktopManager != null;
 
 		/// <summary>
 		/// Gets a value indicating whether OS virtual desktop API is supported by this library.
@@ -51,11 +56,10 @@ namespace WindowsDesktop
 
 		static VirtualDesktop()
 		{
-			if (!IsSupported) return;
-
 			try
 			{
 				ComObjects.Initialize();
+				_isSupportedInternal = true;
 			}
 			catch (Exception ex)
 			{
@@ -81,6 +85,8 @@ namespace WindowsDesktop
 		[Obsolete(UnsupportedMessage)]
 		internal static IEnumerable<VirtualDesktop> GetDesktopsInternal()
 		{
+			VirtualDesktopHelper.ThrowIfNotSupported();
+
 			var desktops = ComObjects.VirtualDesktopManagerInternal.GetDesktops();
 			var count = desktops.GetCount();
 
@@ -123,30 +129,35 @@ namespace WindowsDesktop
 		/// <summary>
 		/// Returns the virtual desktop of the specified identifier.
 		/// </summary>
-		[Obsolete(UnsupportedMessage)]
 		public static VirtualDesktop FromId(Guid desktopId)
 		{
-			VirtualDesktopHelper.ThrowIfNotSupported();
+			if (desktopId == Guid.Empty)
+				throw new ArgumentNullException(nameof(desktopId));
 
-			IVirtualDesktop desktop;
-			try
-			{
-				desktop = ComObjects.VirtualDesktopManagerInternal.FindDesktop(ref desktopId);
-			}
-			catch (COMException ex) when (ex.Match(HResult.TYPE_E_ELEMENTNOTFOUND))
-			{
-				return null;
-			}
-			var wrapper = _wrappers.GetOrAdd(desktop.GetID(), _ => new VirtualDesktop(desktop));
+			if (HasMinimalSupport && !IsSupported) {
+				var wrapper = _wrappers.GetOrAdd(desktopId, _ => new VirtualDesktop(desktopId));
+				return wrapper;
+			} else {
+				VirtualDesktopHelper.ThrowIfNotSupported();
 
-			return wrapper;
+				IVirtualDesktop desktop;
+				try {
+					desktop = ComObjects.VirtualDesktopManagerInternal.FindDesktop(ref desktopId);
+				} catch (COMException ex) when (ex.Match(HResult.TYPE_E_ELEMENTNOTFOUND)) {
+					return null;
+				}
+
+				var wrapper = _wrappers.GetOrAdd(desktop.GetID(), _ => new VirtualDesktop(desktop));
+
+				return wrapper;
+			}
 		}
 
 		/// <summary>
 		/// Returns ID of the virtual desktop, where specified window is located.
 		/// </summary>
 		public static Guid? IdFromHwnd(IntPtr hwnd) {
-			VirtualDesktopHelper.ThrowIfNotSupported();
+			VirtualDesktopHelper.ThrowIfNoMinimalSupport();
 
 			if (hwnd == IntPtr.Zero) return null;
 

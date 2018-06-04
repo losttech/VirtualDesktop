@@ -24,6 +24,7 @@ namespace WindowsDesktop.Interop
 
 		internal static void Initialize()
 		{
+			_listener?.Dispose();
 			if (_listenerWindow == null)
 			{
 				_listenerWindow = new ExplorerRestartListenerWindow(() => Initialize());
@@ -31,13 +32,20 @@ namespace WindowsDesktop.Interop
 			}
 
 			VirtualDesktopManager = MissingCOMInterfaceException.Ensure(GetVirtualDesktopManager());
-			VirtualDesktopManagerInternal = VirtualDesktopManagerInternal.GetInstance();
-			VirtualDesktopNotificationService = MissingCOMInterfaceException.Ensure(GetVirtualDesktopNotificationService());
-			VirtualDesktopPinnedApps = MissingCOMInterfaceException.Ensure(GetVirtualDesktopPinnedApps());
-			ApplicationViewCollection = MissingCOMInterfaceException.Ensure(Interop.ApplicationViewCollection.Get());
-
-			_virtualDesktops.Clear();
-			_listener = VirtualDesktop.RegisterListener();
+			try
+			{
+				VirtualDesktopManagerInternal = VirtualDesktopManagerInternal.GetInstance();
+				VirtualDesktopNotificationService = MissingCOMInterfaceException.Ensure(GetVirtualDesktopNotificationService());
+				VirtualDesktopPinnedApps = MissingCOMInterfaceException.Ensure(GetVirtualDesktopPinnedApps());
+				ApplicationViewCollection = MissingCOMInterfaceException.Ensure(Interop.ApplicationViewCollection.Get());
+			}
+			finally
+			{
+				_virtualDesktops.Clear();
+				// this requires at least VirtualDesktopManager to be set
+				// VirtualDesktopNotificationService is a bonus
+				_listener = VirtualDesktop.RegisterListener();
+			}
 		}
 
 		internal static void Register(IVirtualDesktop vd)
@@ -47,6 +55,8 @@ namespace WindowsDesktop.Interop
 
 		internal static IVirtualDesktop GetVirtualDesktop(Guid id)
 		{
+			VirtualDesktopHelper.ThrowIfNotSupported();
+
 			return _virtualDesktops.GetOrAdd(id, x => VirtualDesktopManagerInternal.FindDesktop(ref x));
 		}
 

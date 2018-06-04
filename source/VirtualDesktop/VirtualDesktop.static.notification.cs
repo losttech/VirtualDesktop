@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using WindowsDesktop.Internal;
 using WindowsDesktop.Interop;
 
@@ -36,11 +37,41 @@ namespace WindowsDesktop
 		/// <summary>
 		/// Occurs when a current virtual desktop is changed.
 		/// </summary>
-		[Obsolete(UnsupportedMessage)]
 		public static event EventHandler<VirtualDesktopChangedEventArgs> CurrentChanged;
 
+		internal static IDisposable RegisterListener() {
+			if (ComObjects.VirtualDesktopNotificationService != null)
+				return RegisterAdvancedListener();
+			else
+				return RegisterMinimalListener();
+		}
 
-		internal static IDisposable RegisterListener()
+		static IDisposable RegisterMinimalListener() {
+			var window = new TransparentWindow();
+			window.Show();
+			Guid? desktopId = VirtualDesktop.IdFromHwnd(window.Handle);
+			var timer = new DispatcherTimer(DispatcherPriority.Normal) {
+				Interval = TimeSpan.FromMilliseconds(250),
+				IsEnabled = true,
+			};
+			timer.Tick += delegate {
+				var newId = VirtualDesktop.IdFromHwnd(window.Handle);
+				if (newId == null || newId == desktopId)
+					return;
+				var newDesktop = VirtualDesktop.FromId(newId.Value);
+				var oldDesktop = desktopId == null ? null : VirtualDesktop.FromId(desktopId.Value);
+				var changedArgs = new VirtualDesktopChangedEventArgs(oldDesktop, newDesktop);
+				CurrentChanged?.Invoke(typeof(VirtualDesktop), changedArgs);
+				desktopId = newId;
+			};
+
+			return Disposable.Create(() => {
+				timer.Stop();
+				window.Close();
+			});
+		}
+
+		static IDisposable RegisterAdvancedListener()
 		{
 			var service = ComObjects.VirtualDesktopNotificationService;
 			listener = new VirtualDesktopNotificationListener();
@@ -51,6 +82,11 @@ namespace WindowsDesktop
 
 		private class VirtualDesktopNotificationListener : IVirtualDesktopNotification
 		{
+			static VirtualDesktop FromComObject(IVirtualDesktop virtualDesktop) => 
+				IsSupported 
+					? VirtualDesktop.FromComObject(virtualDesktop)
+					: VirtualDesktop.FromId(virtualDesktop.GetID());
+
 			void IVirtualDesktopNotification.VirtualDesktopCreated(IVirtualDesktop pDesktop)
 			{
 				Created?.Invoke(this, FromComObject(pDesktop));

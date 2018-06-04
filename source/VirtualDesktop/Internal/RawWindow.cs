@@ -8,6 +8,8 @@ namespace WindowsDesktop.Internal
 {
 	internal abstract class RawWindow
 	{
+		protected const int WS_EX_TOOLWINDOW = 0x80;
+
 		public string Name { get; set; }
 
 		public HwndSource Source { get; private set; }

@@ -16,6 +16,8 @@ namespace WindowsDesktop.Internal
 				WindowStyle = 0x800000,
 			};
 
+			parameters.ExtendedWindowStyle = parameters.ExtendedWindowStyle | WS_EX_TOOLWINDOW;
+
 			this.Show(parameters);
 		}
 	}
