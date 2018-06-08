@@ -8,6 +8,8 @@ namespace WindowsDesktop.Interop
 {
 	public static class ComObjects
 	{
+		internal const int RPC_S_SERVER_UNAVAILABLE = unchecked((int)0x800706BA);
+
 		private static IDisposable _listener;
 		private static ExplorerRestartListenerWindow _listenerWindow;
 		private static readonly ConcurrentDictionary<Guid, IVirtualDesktop> _virtualDesktops = new ConcurrentDictionary<Guid, IVirtualDesktop>();

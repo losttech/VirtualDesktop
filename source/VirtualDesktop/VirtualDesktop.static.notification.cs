@@ -9,6 +9,8 @@ using WindowsDesktop.Interop;
 
 namespace WindowsDesktop
 {
+	using System.Runtime.InteropServices;
+
 	partial class VirtualDesktop
 	{
 		private static uint? dwCookie;
@@ -77,7 +79,13 @@ namespace WindowsDesktop
 			listener = new VirtualDesktopNotificationListener();
 			dwCookie = service.Register(listener);
 
-			return Disposable.Create(() => service.Unregister(dwCookie.Value));
+			return Disposable.Create(() => {
+				try {
+					service.Unregister(dwCookie.Value);
+				} catch (COMException e) when (e.HResult == ComObjects.RPC_S_SERVER_UNAVAILABLE) {
+					// no need to unregister when service is gone
+				}
+			});
 		}
 
 		private class VirtualDesktopNotificationListener : IVirtualDesktopNotification
