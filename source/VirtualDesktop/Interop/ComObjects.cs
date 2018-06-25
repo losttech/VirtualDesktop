@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Threading;
 using WindowsDesktop.Internal;
 
 namespace WindowsDesktop.Interop
@@ -29,7 +30,26 @@ namespace WindowsDesktop.Interop
 			_listener?.Dispose();
 			if (_listenerWindow == null)
 			{
-				_listenerWindow = new ExplorerRestartListenerWindow(() => Initialize());
+				_listenerWindow = new ExplorerRestartListenerWindow(() => {
+					// this is required so that user does not try to call APIs via broken references
+					bool waitForAdvanced = VirtualDesktopManagerInternal != null;
+					VirtualDesktopManagerInternal = null;
+					VirtualDesktopNotificationService = null;
+					VirtualDesktopPinnedApps = null;
+					ApplicationViewCollection = null;
+					try {
+						Initialize();
+					} catch (NotSupportedException) { }
+
+					while (waitForAdvanced && VirtualDesktopManagerInternal == null) {
+						Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+						try {
+							Initialize();
+						} catch (NotSupportedException) { }
+					}
+
+					RegisterListener();
+				});
 				_listenerWindow.Show();
 			}
 
@@ -41,13 +61,15 @@ namespace WindowsDesktop.Interop
 				VirtualDesktopPinnedApps = MissingCOMInterfaceException.Ensure(GetVirtualDesktopPinnedApps());
 				ApplicationViewCollection = MissingCOMInterfaceException.Ensure(Interop.ApplicationViewCollection.Get());
 			}
-			finally
-			{
+			finally {
 				_virtualDesktops.Clear();
-				// this requires at least VirtualDesktopManager to be set
-				// VirtualDesktopNotificationService is a bonus
-				_listener = VirtualDesktop.RegisterListener();
 			}
+		}
+
+		internal static void RegisterListener() {
+			// this requires at least VirtualDesktopManager to be set
+			// VirtualDesktopNotificationService is a bonus
+			_listener = VirtualDesktop.RegisterListener();
 		}
 
 		internal static void Register(IVirtualDesktop vd)

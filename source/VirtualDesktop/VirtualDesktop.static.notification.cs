@@ -9,7 +9,9 @@ using WindowsDesktop.Interop;
 
 namespace WindowsDesktop
 {
+	using System.Diagnostics;
 	using System.Runtime.InteropServices;
+	using System.Threading;
 
 	partial class VirtualDesktop
 	{
@@ -51,7 +53,27 @@ namespace WindowsDesktop
 		static IDisposable RegisterMinimalListener() {
 			var window = new TransparentWindow();
 			window.Show();
-			Guid? desktopId = VirtualDesktop.IdFromHwnd(window.Handle);
+			Guid? desktopId = null;
+			var timeLimit = TimeSpan.FromSeconds(30);
+			var limitTimer = Stopwatch.StartNew();
+			COMException exception = null;
+			int attempts = 10;
+			while (limitTimer.Elapsed < timeLimit || attempts > 0) {
+				attempts = Math.Max(0, attempts - 1);
+				try {
+					desktopId = VirtualDesktop.IdFromHwnd(window.Handle);
+					exception = null;
+				} catch (COMException ex) when (ex.Match(HResult.INVALID_STATE)) {
+					Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => {}));
+					if (limitTimer.Elapsed >= timeLimit && attempts <= 0)
+						throw;
+					exception = ex;
+				}
+			}
+
+			if (desktopId == null && exception != null && limitTimer.Elapsed >= timeLimit)
+				throw exception;
+				
 			var timer = new DispatcherTimer(DispatcherPriority.Normal) {
 				Interval = TimeSpan.FromMilliseconds(250),
 				IsEnabled = true,

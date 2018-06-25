@@ -2,6 +2,10 @@
 
 namespace WindowsDesktop.Interop
 {
+	using System.Diagnostics;
+	using System.Runtime.InteropServices;
+	using System.Windows.Threading;
+
 	[Obsolete(VirtualDesktop.UnsupportedMessage)]
 	internal class VirtualDesktopManagerInternal
 		: IVirtualDesktopManagerInternal10130
@@ -12,29 +16,57 @@ namespace WindowsDesktop.Interop
 		private IVirtualDesktopManagerInternal10240 _manager10240;
 		private IVirtualDesktopManagerInternal14328 _manager14328;
 
-		public static VirtualDesktopManagerInternal GetInstance()
-		{
-			var v14328 = GetInstanceCore<IVirtualDesktopManagerInternal14328>();
+		public static VirtualDesktopManagerInternal GetInstance() {
+			var shell = GetShell();
+
+			var v14328 = GetInstanceCore<IVirtualDesktopManagerInternal14328>(shell);
 			if (v14328 != null) return new VirtualDesktopManagerInternal() { _manager14328 = v14328, };
 
-			var v10240 = GetInstanceCore<IVirtualDesktopManagerInternal10240>();
+			var v10240 = GetInstanceCore<IVirtualDesktopManagerInternal10240>(shell);
 			if (v10240 != null) return new VirtualDesktopManagerInternal() { _manager10240 = v10240, };
 
-			var v10130 = GetInstanceCore<IVirtualDesktopManagerInternal10130>();
+			var v10130 = GetInstanceCore<IVirtualDesktopManagerInternal10130>(shell);
 			if (v10130 != null) return new VirtualDesktopManagerInternal() { _manager10130 = v10130, };
 
 			throw new NotSupportedException();
 		}
 
-		private static T GetInstanceCore<T>()
+		static readonly TimeSpan ShellRestartTimeLimit = TimeSpan.FromSeconds(30);
+		private static T GetInstanceCore<T>(IServiceProvider shell)
 		{
+			var timer = Stopwatch.StartNew();
+			COMException e = null;
+			while (timer.Elapsed < ShellRestartTimeLimit) {
+				try {
+					object ppvObject;
+					shell.QueryService(CLSID.VirtualDesktopAPIUnknown, typeof(T).GUID, out ppvObject);
+
+					T result = (T)ppvObject;
+
+					return result;
+				} catch (COMException ex) {
+					e = ex;
+					Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+				}
+			}
+
+			throw e;
+		}
+
+		static IServiceProvider GetShell() {
 			var shellType = Type.GetTypeFromCLSID(CLSID.ImmersiveShell);
-			var shell = (IServiceProvider)Activator.CreateInstance(shellType);
+			var timer = Stopwatch.StartNew();
+			COMException e = null;
+			while (timer.Elapsed < ShellRestartTimeLimit) {
+				try {
+					return (IServiceProvider)Activator.CreateInstance(shellType);
+				} catch (COMException ex) {
+					e = ex;
+					Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => { }));
+				}
+			}
 
-			object ppvObject;
-			shell.QueryService(CLSID.VirtualDesktopAPIUnknown, typeof(T).GUID, out ppvObject);
-
-			return (T)ppvObject;
+			throw e;
 		}
 
 		public int GetCount()

@@ -10,7 +10,6 @@ namespace WindowsDesktop
 {
 	partial class VirtualDesktop
 	{
-		private static readonly bool _isSupportedInternal;
 		private static readonly ConcurrentDictionary<Guid, VirtualDesktop> _wrappers = new ConcurrentDictionary<Guid, VirtualDesktop>();
 
 		/// <summary>
@@ -22,11 +21,10 @@ namespace WindowsDesktop
 		/// Gets a value indicating whether OS virtual desktop API is supported by this library.
 		/// </summary>
 		public static bool IsSupported =>
-#if DEBUG
-			_isSupportedInternal;
-#else
-			Environment.OSVersion.Version.Major >= 10 && _isSupportedInternal;
+#if !DEBUG
+			Environment.OSVersion.Version.Major >= 10 &&
 #endif
+			ComObjects.ApplicationViewCollection != null;
 
 		/// <summary>
 		/// Gets a value indicating whether virtual desktop API is present in the system.
@@ -59,12 +57,11 @@ namespace WindowsDesktop
 			try
 			{
 				ComObjects.Initialize();
-				_isSupportedInternal = true;
+				ComObjects.RegisterListener();
 			}
 			catch (Exception ex)
 			{
 				InitializationException = ex;
-				_isSupportedInternal = false;
 			}
 
 			AppDomain.CurrentDomain.ProcessExit += (sender, args) => ComObjects.Terminate();
