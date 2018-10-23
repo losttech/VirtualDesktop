@@ -57,12 +57,16 @@ namespace WindowsDesktop
 			try
 			{
 				ComObjects.Initialize();
-				ComObjects.RegisterListener();
 			}
 			catch (Exception ex)
 			{
 				InitializationException = ex;
 			}
+
+			try
+			{
+				ComObjects.RegisterListener();
+			} catch { }
 
 			AppDomain.CurrentDomain.ProcessExit += (sender, args) => ComObjects.Terminate();
 		}

@@ -45,7 +45,11 @@ namespace WindowsDesktop
 
 		internal static IDisposable RegisterListener() {
 			if (ComObjects.VirtualDesktopNotificationService != null)
-				return RegisterAdvancedListener();
+				try {
+					return RegisterAdvancedListener();
+				} catch {
+					return RegisterMinimalListener();
+				}
 			else
 				return RegisterMinimalListener();
 		}
