@@ -1,11 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net46</TargetFramework>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <Version>0.0.2</Version>
+    <TargetFrameworks>net46;net5.0-windows</TargetFrameworks>
+    <Version>0.0.3</Version>
+    <UseWPF>true</UseWPF>
     <PackageId>LostTech.VirtualDesktop</PackageId>
     <Authors>grabacr.net, Victor Milovanov</Authors>
     <Company>Lost Tech LLC, grabacr.net</Company>
