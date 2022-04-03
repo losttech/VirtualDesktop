@@ -15,6 +15,9 @@ namespace WindowsDesktop.Interop
 		public static extern uint RegisterWindowMessage(string lpProcName);
 
 		[DllImport("user32.dll")]
+		public static extern IntPtr GetForegroundWindow();
+
+		[DllImport("user32.dll")]
 		public static extern bool CloseWindow(IntPtr hWnd);
 	}
 }
