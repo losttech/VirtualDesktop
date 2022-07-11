@@ -30,7 +30,7 @@ namespace WindowsDesktop
 		/// Gets a value indicating whether virtual desktop API is present in the system.
 		/// It might still not be supported. See <see cref="IsSupported"/>.
 		/// </summary>
-		public static bool IsPresent => ComObjects.VirtualDesktopManager != null;
+		public static bool IsPresent => ComObjects.VirtualDesktopManager is not null;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static Exception InitializationException { get; }
