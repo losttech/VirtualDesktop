@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net46;net6.0-windows10.0.19041.0</TargetFrameworks>
-    <Version>0.0.4</Version>
+    <Version>0.0.5</Version>
     <LangVersion>10.0</LangVersion>
     <UseWPF>true</UseWPF>
     <PackageId>LostTech.VirtualDesktop</PackageId>
