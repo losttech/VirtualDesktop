@@ -10,21 +10,13 @@ namespace WindowsDesktop
 {
 	partial class VirtualDesktop
 	{
-		private static readonly ConcurrentDictionary<Guid, VirtualDesktop> _wrappers = new();
-
-		/// <summary>
-		/// Returns <c>true</c>, if the minimal stable functionality is supported
-		/// </summary>
-		public static bool HasMinimalSupport => ComObjects.VirtualDesktopManager != null;
-
 		/// <summary>
 		/// Gets a value indicating whether virtual desktop API is present in the system.
-		/// It might still not be supported. See <see cref="IsSupported"/>.
 		/// </summary>
 		public static bool IsPresent => ComObjects.VirtualDesktopManager is not null;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static Exception InitializationException { get; }
+		public static Exception? InitializationException { get; }
 
 		static VirtualDesktop()
 		{
@@ -45,17 +37,32 @@ namespace WindowsDesktop
 			AppDomain.CurrentDomain.ProcessExit += (sender, args) => ComObjects.Terminate();
 		}
 
+		static VirtualDesktop? FromId(Guid? id) => id is { } v ? new (v) : null;
+		public static VirtualDesktop? FromHwnd(IntPtr hwnd) => FromId(IdFromHwnd(hwnd));
+
 		/// <summary>
 		/// Returns ID of the virtual desktop, where specified window is located.
 		/// </summary>
 		public static Guid? IdFromHwnd(IntPtr hwnd) {
-			VirtualDesktopHelper.ThrowIfNoMinimalSupport();
-
 			if (hwnd == IntPtr.Zero) return null;
 
 			try {
-				return ComObjects.VirtualDesktopManager.GetWindowDesktopId(hwnd);
+				return VirtualDesktopHelper.GetManagerOrThrow().GetWindowDesktopId(hwnd);
 			} catch (COMException ex) when (ex.Match(HResult.REGDB_E_CLASSNOTREG, HResult.TYPE_E_ELEMENTNOTFOUND)) {
+				return null;
+			}
+		}
+
+		public static bool? IsWindowOnCurrentVirtualDesktop(IntPtr hwnd)
+		{
+			if (hwnd == IntPtr.Zero) return false;
+
+			try
+			{
+				return VirtualDesktopHelper.GetManagerOrThrow().IsWindowOnCurrentVirtualDesktop(hwnd);
+			}
+			catch (COMException ex) when (ex.Match(HResult.REGDB_E_CLASSNOTREG, HResult.TYPE_E_ELEMENTNOTFOUND))
+			{
 				return null;
 			}
 		}

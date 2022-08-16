@@ -34,41 +34,6 @@ namespace WindowsDesktop
 			VirtualDesktopHelper.MoveToDesktop(window.GetHandle(), virtualDesktop);
 		}
 
-		public static void SwitchAndMove(this VirtualDesktop virtualDesktop, Window window)
-		{
-			window.MoveToDesktop(virtualDesktop);
-			virtualDesktop.Switch();
-		}
-
-		public static bool IsPinned(this Window window)
-		{
-			return VirtualDesktop.IsPinnedWindow(window.GetHandle());
-		}
-
-		public static void Pin(this Window window)
-		{
-			VirtualDesktop.PinWindow(window.GetHandle());
-		}
-
-		public static void Unpin(this Window window)
-		{
-			VirtualDesktop.UnpinWindow(window.GetHandle());
-		}
-
-		public static void TogglePin(this Window window)
-		{
-			var handle = window.GetHandle();
-
-			if (VirtualDesktop.IsPinnedWindow(handle))
-			{
-				VirtualDesktop.UnpinWindow(handle);
-			}
-			else
-			{
-				VirtualDesktop.PinWindow(handle);
-			}
-		}
-
 		internal static IntPtr GetHandle(this Visual window)
 		{
 			var hwndSource = (HwndSource)PresentationSource.FromVisual(window);

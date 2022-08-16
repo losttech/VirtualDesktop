@@ -11,27 +11,24 @@ namespace WindowsDesktop.Interop
 	{
 		internal const int RPC_S_SERVER_UNAVAILABLE = unchecked((int)0x800706BA);
 
-		private static IDisposable _listener;
-		private static ExplorerRestartListenerWindow _listenerWindow;
+		private static IDisposable? _listener;
+		private static ExplorerRestartListenerWindow? _listenerWindow;
 
-		internal static IVirtualDesktopManager VirtualDesktopManager { get; private set; }
+		internal static IVirtualDesktopManager? VirtualDesktopManager { get; private set; }
 
 		internal static void Initialize()
 		{
-			_listener?.Dispose();
+			VirtualDesktopManager = MissingCOMInterfaceException.Ensure(GetVirtualDesktopManager());
+
 			if (_listenerWindow == null)
 			{
 				_listenerWindow = new ExplorerRestartListenerWindow(() => {
 					try {
 						Initialize();
 					} catch (NotSupportedException) { }
-
-					RegisterListener();
 				});
 				_listenerWindow.Show();
 			}
-
-			VirtualDesktopManager = MissingCOMInterfaceException.Ensure(GetVirtualDesktopManager());
 		}
 
 		internal static void RegisterListener() {
@@ -81,7 +78,7 @@ namespace WindowsDesktop.Interop
 		public static IVirtualDesktopManager GetVirtualDesktopManager()
 		{
 			var vdmType = Type.GetTypeFromCLSID(CLSID.VirtualDesktopManager);
-			var instance = Activator.CreateInstance(vdmType);
+			var instance = Activator.CreateInstance(vdmType)!;
 
 			return (IVirtualDesktopManager)instance;
 		}

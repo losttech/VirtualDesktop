@@ -12,7 +12,7 @@ namespace WindowsDesktop.Internal
 
 		public string Name { get; set; }
 
-		public HwndSource Source { get; private set; }
+		public HwndSource? Source { get; private set; }
 
 		public IntPtr Handle => this.Source?.Handle ?? IntPtr.Zero;
 

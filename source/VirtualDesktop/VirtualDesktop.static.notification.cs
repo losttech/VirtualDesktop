@@ -12,21 +12,23 @@ namespace WindowsDesktop
 		/// <summary>
 		/// Occurs when a current virtual desktop is changed.
 		/// </summary>
-		public static event EventHandler<VirtualDesktopChangedEventArgs> CurrentChanged;
+		public static event EventHandler<VirtualDesktopChangedEventArgs>? CurrentChanged;
 
 		internal static IDisposable RegisterListener() {
 			Guid? desktopId = null;
 			var timeLimit = TimeSpan.FromSeconds(30);
 			var limitTimer = Stopwatch.StartNew();
-			COMException exception = null;
+			COMException? exception = null;
 			int attempts = 10;
 			while (limitTimer.Elapsed < timeLimit || attempts > 0) {
 				attempts = Math.Max(0, attempts - 1);
 				try {
-					desktopId = VirtualDesktop.IdFromHwnd(NativeMethods.GetForegroundWindow());
+					desktopId = IdFromHwnd(NativeMethods.GetForegroundWindow());
 					exception = null;
+					if (desktopId is not null)
+						break;
 				} catch (COMException ex) when (ex.Match(HResult.INVALID_STATE)) {
-					Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action(() => {}));
+					DoEvents();
 					if (limitTimer.Elapsed >= timeLimit && attempts <= 0)
 						throw;
 					exception = ex;
@@ -35,13 +37,16 @@ namespace WindowsDesktop
 
 			if (desktopId == null && exception != null && limitTimer.Elapsed >= timeLimit)
 				throw exception;
-				
-			var timer = new DispatcherTimer(DispatcherPriority.Normal) {
-				Interval = TimeSpan.FromMilliseconds(250),
-				IsEnabled = true,
+
+			var window = new ForegroundListener
+			{
+				Name = "VirtualDesktopListener",
 			};
-			timer.Tick += delegate {
-				var newId = VirtualDesktop.IdFromHwnd(NativeMethods.GetForegroundWindow());
+			Action<WindowEventArgs> desktopMightHaveChanged = args =>
+			{
+				if (IsWindowOnCurrentVirtualDesktop(args.Handle) != true)
+					return;
+				var newId = IdFromHwnd(args.Handle);
 				if (newId == null || newId == desktopId || newId == Guid.Empty)
 					return;
 				var newDesktop = new VirtualDesktop(newId.Value);
@@ -50,10 +55,35 @@ namespace WindowsDesktop
 				CurrentChanged?.Invoke(typeof(VirtualDesktop), changedArgs);
 				desktopId = newId;
 			};
+			window.OnForegroundChanged += desktopMightHaveChanged;
+			var timer = new DispatcherTimer(DispatcherPriority.Normal)
+			{
+				Interval = TimeSpan.FromMilliseconds(250),
+				IsEnabled = true,
+			};
+			timer.Tick += delegate
+			{
+				desktopMightHaveChanged(new(NativeMethods.GetForegroundWindow()));
+			};
+			window.Show();
 
 			return Disposable.Create(() => {
 				timer.Stop();
+				window.Close();
 			});
+		}
+
+		static void DoEvents()
+		{
+			var frame = new DispatcherFrame();
+			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background,
+				new DispatcherOperationCallback(
+					delegate (object f)
+					{
+						((DispatcherFrame)f).Continue = false;
+						return null;
+					}), frame);
+			Dispatcher.PushFrame(frame);
 		}
 	}
 }

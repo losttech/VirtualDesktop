@@ -9,14 +9,12 @@ namespace WindowsDesktop.Internal
 	{
 		public override void Show()
 		{
-			var parameters = new HwndSourceParameters(this.Name)
+			var parameters = new HwndSourceParameters(this.Name, width: 1, height: 1)
 			{
-				Width = 1,
-				Height = 1,
-				WindowStyle = 0x800000,
+				WindowStyle = (int)(WindowStyle.WS_BORDER),
 			};
 
-			parameters.ExtendedWindowStyle = parameters.ExtendedWindowStyle | WS_EX_TOOLWINDOW;
+			parameters.ExtendedWindowStyle |= WS_EX_TOOLWINDOW;
 
 			this.Show(parameters);
 		}
