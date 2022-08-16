@@ -1,5 +1,8 @@
 ﻿namespace WindowsDesktop.Internal;
 
+using System;
+
+[Flags]
 internal enum WindowStyle : int
 {
 	WS_BORDER = 0x00800000,

@@ -48,7 +48,7 @@ namespace WindowsDesktop
 
 			try {
 				return VirtualDesktopHelper.GetManagerOrThrow().GetWindowDesktopId(hwnd);
-			} catch (COMException ex) when (ex.Match(HResult.REGDB_E_CLASSNOTREG, HResult.TYPE_E_ELEMENTNOTFOUND)) {
+			} catch (COMException ex) when (ex.Match(HResult.REGDB_E_CLASSNOTREG, HResult.TYPE_E_ELEMENTNOTFOUND, HResult.INVALID_STATE)) {
 				return null;
 			}
 		}
@@ -61,7 +61,7 @@ namespace WindowsDesktop
 			{
 				return VirtualDesktopHelper.GetManagerOrThrow().IsWindowOnCurrentVirtualDesktop(hwnd);
 			}
-			catch (COMException ex) when (ex.Match(HResult.REGDB_E_CLASSNOTREG, HResult.TYPE_E_ELEMENTNOTFOUND))
+			catch (COMException ex) when (ex.Match(HResult.REGDB_E_CLASSNOTREG, HResult.TYPE_E_ELEMENTNOTFOUND, HResult.INVALID_STATE))
 			{
 				return null;
 			}

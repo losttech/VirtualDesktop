@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
+
 using WindowsDesktop;
 
 namespace VirtualDesktopShowcase
@@ -15,12 +16,15 @@ namespace VirtualDesktopShowcase
 			this.InitializeComponent();
 		}
 
-		private void Window_Loaded(object sender, RoutedEventArgs e) {
-            VirtualDesktop.CurrentChanged += this.VirtualDesktop_CurrentChanged;
+		private void Window_Loaded(object sender, RoutedEventArgs e)
+		{
+			VirtualDesktop.CurrentChanged += this.VirtualDesktop_CurrentChanged;
+			this.CurrentDesktop.Text = VirtualDesktop.CurrentID.ToString();
 		}
 
-        private void VirtualDesktop_CurrentChanged(object sender, VirtualDesktopChangedEventArgs e) {
-            this.CurrentDesktop.Text = e.NewDesktop.Id.ToString();
-        }
-    }
+		private void VirtualDesktop_CurrentChanged(object sender, VirtualDesktopChangedEventArgs e)
+		{
+			this.CurrentDesktop.Text = e.NewDesktop.Id.ToString();
+		}
+	}
 }

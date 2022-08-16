@@ -20,6 +20,17 @@ namespace WindowsDesktop.Interop
 		[DllImport("user32.dll")]
 		public static extern bool CloseWindow(IntPtr hWnd);
 
+		public delegate bool EnumWindowsProc(IntPtr hWnd, int lParam);
+		[DllImport("ext-ms-win-ntuser-window-l1-1-0")]
+		public static extern bool EnumWindows(EnumWindowsProc enumFunc, int lParam);
+		[DllImport("ext-ms-win-ntuser-window-l1-1-1")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool IsWindowVisible(IntPtr hwnd);
+
+		public const int GWL_EXSTYLE = -20;
+		[DllImport("ext-ms-win-ntuser-windowclass-l1-1-0")]
+		public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
 		#region Hooks
 		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
 		public static extern IntPtr SetWinEventHook(WindowEvent hookMin, WindowEvent hookMax,
