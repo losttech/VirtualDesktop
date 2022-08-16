@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net46;net6.0-windows10.0.19041.0</TargetFrameworks>
-    <Version>0.0.5</Version>
+    <Version>0.0.6-clean</Version>
     <LangVersion>10.0</LangVersion>
     <UseWPF>true</UseWPF>
     <PackageId>LostTech.VirtualDesktop</PackageId>
@@ -23,19 +23,6 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\..\LICENSE">

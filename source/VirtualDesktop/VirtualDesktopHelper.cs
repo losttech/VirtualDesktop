@@ -6,14 +6,6 @@ namespace WindowsDesktop
 {
 	public static class VirtualDesktopHelper
 	{
-		internal static void ThrowIfNotSupported()
-		{
-			if (!VirtualDesktop.IsSupported)
-			{
-				throw new NotSupportedException("Need to include the app manifest in your project so as to target Windows 10. And, run without debugging.");
-			}
-		}
-
 		internal static void ThrowIfNoMinimalSupport()
 		{
 			if (!VirtualDesktop.HasMinimalSupport)
@@ -40,15 +32,8 @@ namespace WindowsDesktop
 				var guid = virtualDesktop.Id;
 				ComObjects.VirtualDesktopManager.MoveWindowToDesktop(hWnd, ref guid);
 			}
-			else
-			{
-				if (!VirtualDesktop.IsSupported)
-					throw new NotSupportedException("This version of OS has only minimal support. You can only move own windows with it.");
 
-				IApplicationView view;
-				ComObjects.ApplicationViewCollection.GetViewForHwnd(hWnd, out view);
-				ComObjects.VirtualDesktopManagerInternal.MoveViewToDesktop(view, virtualDesktop.ComObject);
-			}
+			throw new NotSupportedException("You can only move own windows.");
 		}
 	}
 }
