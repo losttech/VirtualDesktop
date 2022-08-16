@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net46;net6.0-windows10.0.19041.0</TargetFrameworks>
-    <Version>0.0.6-clean</Version>
+    <Version>0.0.6-clean1</Version>
     <LangVersion>10.0</LangVersion>
     <RootNamespace>WindowsDesktop</RootNamespace>
     <Nullable>enable</Nullable>
