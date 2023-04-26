@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace WindowsDesktop.Interop
 {
-	public enum HResult : uint
+	enum HResult : uint
 	{
 		/// <summary>
 		/// You can not call shell functions from a WndProc handler,
@@ -17,11 +17,16 @@ namespace WindowsDesktop.Interop
 		INVALID_STATE = 0x8007139F,
 	}
 
-	public static class HResultExtensions
+	static class HResultExtensions
 	{
 		public static bool Match(this Exception ex, params HResult[] hResult)
 		{
 			return hResult.Select(x => (uint)x).Any(x => ((uint)ex.HResult) == x);
+		}
+
+		public static bool Match(this PInvoke.HResult result, params HResult[] hResult)
+		{
+			return hResult.Select(x => (uint)x).Any(x => result.AsUInt32 == x);
 		}
 	}
 }

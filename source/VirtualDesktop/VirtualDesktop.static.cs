@@ -46,12 +46,21 @@ namespace WindowsDesktop
 		public static Guid? IdFromHwnd(IntPtr hwnd) {
 			if (hwnd == IntPtr.Zero) return null;
 
-			try {
-				return VirtualDesktopHelper.GetManagerOrThrow().GetWindowDesktopId(hwnd);
-			} catch (COMException ex) when (ex.Match(HResult.REGDB_E_CLASSNOTREG, HResult.TYPE_E_ELEMENTNOTFOUND, HResult.INVALID_STATE)) {
+			var result = VirtualDesktopHelper.GetManagerOrThrow().GetWindowDesktopId(hwnd, out var desktopID);
+			if (result.Succeeded)
+				return desktopID;
+
+			if (result.Match(HResult.REGDB_E_CLASSNOTREG, HResult.TYPE_E_ELEMENTNOTFOUND, HResult.INVALID_STATE))
 				return null;
-			}
+
+			throw result.GetException();
 		}
+
+		/// <summary>
+		/// Gets ID of the virtual desktop, where specified window is located.
+		/// </summary>
+		public static PInvoke.HResult TryGetIdFromHwnd(IntPtr hwnd, out Guid id)
+			=> VirtualDesktopHelper.GetManagerOrThrow().GetWindowDesktopId(hwnd, out id);
 
 		public static bool? IsWindowOnCurrentVirtualDesktop(IntPtr hwnd)
 		{

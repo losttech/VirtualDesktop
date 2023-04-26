@@ -13,9 +13,8 @@
 	<ScrollViewer HorizontalScrollBarVisibility="Disabled"
 				  VerticalScrollBarVisibility="Auto">
 		<StackPanel Margin="8">
-			<StackPanel Margin="8">
-        <TextBlock x:Name="CurrentDesktop"/>
-      </StackPanel>
-    </StackPanel>
+			<TextBlock x:Name="CurrentDesktop"/>
+			<Button Click="GetID_Click">Get ID</Button>
+		</StackPanel>
 	</ScrollViewer>
 </Window>

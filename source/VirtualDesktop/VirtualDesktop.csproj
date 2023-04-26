@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net46;net6.0-windows10.0.19041.0</TargetFrameworks>
-    <Version>0.0.6-pre0</Version>
+    <Version>0.0.7-pre0</Version>
     <LangVersion>10.0</LangVersion>
     <RootNamespace>WindowsDesktop</RootNamespace>
     <Nullable>enable</Nullable>
@@ -36,6 +36,7 @@
   <ItemGroup>
     <!-- The following is recommended for public projects -->
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <PackageReference Include="PInvoke.Windows.Core" Version="0.7.124" />
   </ItemGroup>
 
 </Project>

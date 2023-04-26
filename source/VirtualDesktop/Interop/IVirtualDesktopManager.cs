@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace WindowsDesktop.Interop
@@ -10,7 +10,8 @@ namespace WindowsDesktop.Interop
 	{
 		bool IsWindowOnCurrentVirtualDesktop(IntPtr topLevelWindow);
 
-		Guid GetWindowDesktopId(IntPtr topLevelWindow);
+		[PreserveSig]
+		PInvoke.HResult GetWindowDesktopId(IntPtr topLevelWindow, out Guid desktopID);
 
 		void MoveWindowToDesktop(IntPtr topLevelWindow, ref Guid desktopId);
 	}
