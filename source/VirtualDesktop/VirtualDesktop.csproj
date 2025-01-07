@@ -1,17 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net46;net6.0-windows10.0.19041.0</TargetFrameworks>
-    <Version>0.0.7-pre0</Version>
+    <TargetFrameworks>net46;net8.0-windows10.0.26100.0</TargetFrameworks>
+    <Version>0.0.8-pre0</Version>
     <LangVersion>10.0</LangVersion>
     <RootNamespace>WindowsDesktop</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <PackageId>LostTech.VirtualDesktop</PackageId>
-    <Authors>grabacr.net, Victor Milovanov</Authors>
+    <Authors>grabacr.net, Victor Nova</Authors>
     <Company>Lost Tech LLC, grabacr.net</Company>
     <Description>C# wrapper for IVirtualDesktopManager on Windows 10. You need to include the app manifest in your project so as to target Windows 10.</Description>
-    <Copyright>© 2023 Lost Tech LLC; © 2015 Manato KAMEYA</Copyright>
+    <Copyright>© 2025 Lost Tech LLC; © 2015 Manato KAMEYA</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/losttech/VirtualDesktop</PackageProjectUrl>
     <RepositoryUrl>https://github.com/losttech/VirtualDesktop.git</RepositoryUrl>
@@ -35,7 +35,7 @@
 
   <ItemGroup>
     <!-- The following is recommended for public projects -->
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     <PackageReference Include="PInvoke.Windows.Core" Version="0.7.124" />
   </ItemGroup>
 
