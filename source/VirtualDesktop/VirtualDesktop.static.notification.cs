@@ -25,10 +25,7 @@ namespace WindowsDesktop
 		{
 			currentID = GetCurrentDesktopID();
 
-			var window = new ForegroundListener
-			{
-				Name = "VirtualDesktopListener",
-			};
+			var window = new ForegroundListener(name: "VirtualDesktopListener");
 			window.OnForegroundChanged += args =>
 			{
 				if (GetForegroundDesktopID() is { } newId)

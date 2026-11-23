@@ -1,16 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Interop;
+
 using WindowsDesktop.Interop;
 
 namespace WindowsDesktop.Internal
 {
 	internal abstract class RawWindow
 	{
+		protected RawWindow(string name)
+		{
+			this.Name = name;
+		}
+
 		protected const int WS_EX_TOOLWINDOW = 0x80;
 
-		public string Name { get; set; }
+		public string Name { get; }
 
 		public HwndSource? Source { get; private set; }
 

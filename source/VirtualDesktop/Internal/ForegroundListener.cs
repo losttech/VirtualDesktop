@@ -10,7 +10,7 @@ internal class ForegroundListener : TransparentWindow
 {
 	readonly WinEventProc proc;
 	IntPtr hook;
-	public ForegroundListener()
+	public ForegroundListener(string name) : base(name)
 	{
 		this.proc = this.Hook;
 	}

@@ -48,9 +48,8 @@ namespace WindowsDesktop.Interop
 			private uint _explorerRestertedMessage;
 			private readonly Action _action;
 
-			public ExplorerRestartListenerWindow(Action action)
+			public ExplorerRestartListenerWindow(Action action) : base(name: nameof(ExplorerRestartListenerWindow))
 			{
-				this.Name = nameof(ExplorerRestartListenerWindow);
 				this._action = action;
 			}
 
@@ -75,12 +74,14 @@ namespace WindowsDesktop.Interop
 
 		#region public methods
 
-		public static IVirtualDesktopManager GetVirtualDesktopManager()
+		public static IVirtualDesktopManager? GetVirtualDesktopManager()
 		{
 			var vdmType = Type.GetTypeFromCLSID(CLSID.VirtualDesktopManager);
-			var instance = Activator.CreateInstance(vdmType)!;
+			if (vdmType is null)
+				return null;
 
-			return (IVirtualDesktopManager)instance;
+			var instance = Activator.CreateInstance(vdmType);
+			return (IVirtualDesktopManager?)instance;
 		}
 
 		#endregion

@@ -10,6 +10,6 @@
 			return $"COM interface type {name} can't be found. Did the CLSID change in this Windows build?";
 		}
 
-		internal static T Ensure<T>(T comInstance) where T : class => comInstance ?? throw new MissingCOMInterfaceException(typeof(T));
+		internal static T Ensure<T>(T? comInstance) where T : class => comInstance ?? throw new MissingCOMInterfaceException(typeof(T));
 	}
 }
