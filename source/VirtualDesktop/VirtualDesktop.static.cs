@@ -74,6 +74,11 @@ namespace WindowsDesktop
 			{
 				return null;
 			}
+			// During a shell restart, COM can return E_NOTIMPL as a managed NotImplementedException.
+			catch (NotImplementedException ex) when (ex.Match(HResult.E_NOTIMPL))
+			{
+				return null;
+			}
 		}
 	}
 }

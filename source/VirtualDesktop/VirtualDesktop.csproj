@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net46;net8.0-windows10.0.26100.0</TargetFrameworks>
-    <Version>0.0.8-pre0</Version>
-    <LangVersion>10.0</LangVersion>
+    <TargetFrameworks>net462;net8.0-windows10.0.26100.0</TargetFrameworks>
+    <Version>0.0.9-pre0</Version>
+    <LangVersion>14.0</LangVersion>
     <RootNamespace>WindowsDesktop</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
@@ -36,7 +36,12 @@
   <ItemGroup>
     <!-- The following is recommended for public projects -->
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-    <PackageReference Include="PInvoke.Windows.Core" Version="0.7.124" />
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="System.Memory" Version="4.6.0" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.0" />
   </ItemGroup>
 
 </Project>

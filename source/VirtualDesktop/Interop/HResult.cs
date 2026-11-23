@@ -6,6 +6,7 @@ namespace WindowsDesktop.Interop
 {
 	enum HResult : uint
 	{
+		E_NOTIMPL = 0x80004001,
 		/// <summary>
 		/// You can not call shell functions from a WndProc handler,
 		/// when the message needs synchronous processing (e.g. sent by SendMessage).
