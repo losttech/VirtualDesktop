@@ -1,39 +1,23 @@
 ﻿using System;
-using System.Diagnostics;
-using WindowsDesktop.Interop;
+using Windows.Win32;
+using Windows.Win32.Foundation;
 
-namespace WindowsDesktop
+namespace WindowsDesktop;
+
+public static class VirtualDesktopHelper
 {
-	public static class VirtualDesktopHelper
+	/// <summary>Returns true when the shell confirms the window is on the current desktop.</summary>
+	public static bool IsCurrentVirtualDesktop(nint handle) => VirtualDesktop.IsWindowOnCurrentVirtualDesktop(handle) == true;
+
+	public static void MoveToDesktop(nint hWnd, VirtualDesktop virtualDesktop)
 	{
-		internal static IVirtualDesktopManager GetManagerOrThrow()
-		{
-			if (!VirtualDesktop.IsPresent)
-				throw new NotSupportedException("Unsupported OS version, or need to include the app manifest in your project so as to target Windows 10. And, run without debugging.");
+		var manager = VirtualDesktop.CreateManager();
+		var window = (HWND)hWnd;
+		if (PInvoke.GetWindowThreadProcessId(window, out uint processId) == 0)
+			throw new ArgumentException("The handle does not identify a window.", nameof(hWnd));
+		if (processId != PInvoke.GetCurrentProcessId())
+			throw new NotSupportedException("You can only move your own windows.");
 
-			return ComObjects.VirtualDesktopManager!;
-		}
-
-
-		public static bool IsCurrentVirtualDesktop(IntPtr handle)
-		{
-			return GetManagerOrThrow().IsWindowOnCurrentVirtualDesktop(handle);
-		}
-
-		public static void MoveToDesktop(IntPtr hWnd, VirtualDesktop virtualDesktop)
-		{
-			var manager = GetManagerOrThrow();
-
-			int processId;
-			NativeMethods.GetWindowThreadProcessId(hWnd, out processId);
-
-			if (Process.GetCurrentProcess().Id == processId)
-			{
-				var guid = virtualDesktop.Id;
-				manager.MoveWindowToDesktop(hWnd, ref guid);
-			}
-
-			throw new NotSupportedException("You can only move own windows.");
-		}
+		manager.MoveWindowToDesktop(window, virtualDesktop.Id);
 	}
 }

@@ -1,14 +1,12 @@
 ## VirtualDesktop
 
-VirtualDesktop is C# wrapper for [IVirtualDesktopManager](https://msdn.microsoft.com/en-us/library/windows/desktop/mt186440%28v%3Dvs.85%29.aspx) on Windows 10.
-
+VirtualDesktop wraps the Windows shell's virtual desktop API for desktop apps. [Microsoft's IVirtualDesktopManager reference](https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-ivirtualdesktopmanager)
 
 ## Features
 
-* Switch, add, and remove a Virtual Desktop.
-* Move the window in the same process to any Virtual Desktop.
-* Move the window of another process to any Virtual Desktop (Support in version 2.0 or later).
-
+* Look up the desktop for a top-level window and check whether it is on the current desktop.
+* Move a window owned by the calling process to a known desktop.
+* Observe changes to the current desktop.
 
 ## Installation
 
@@ -40,31 +38,16 @@ Preparation:
 using WindowsDesktop;
 ```
 
-Get instance of VirtualDesktop: 
-```csharp 
-// Get all Virtual Desktops
-var desktops = VirtualDesktop.GetDesktops();
+Query a window's desktop
 
-// Get Virtual Desktop for specific window
-var desktop = VirtualDesktop.FromHwnd(hwnd);
-
-// Get the left/right desktop
-var left  = desktop.GetLeft();
-var right = desktop.GetRight();
-```
-
-Manage Virtual Desktops:
 ```csharp
-// Create new
-var desktop = VirtualDesktop.Create();
-
-// Remove
-desktop.Remove();
-
-// Switch
-desktop.Switch();
-
+var desktop = VirtualDesktop.FromHwnd(hwnd);
+var isCurrent = VirtualDesktop.IsWindowOnCurrentVirtualDesktop(hwnd);
 ```
+
+Callers migrating from `TryGetIdFromHwnd` can use `IdFromHwnd` to get a nullable GUID. During an Explorer restart, both queries can return `null`. The Boolean `IsCurrentVirtualDesktop` helper returns `false` in that case. If Windows has no registered virtual desktop manager, `IsPresent` returns `false` and queries for a window throw `NotSupportedException`. Other shell failures propagate as managed exceptions.
+
+`CurrentID` returns `Guid.Empty` until the library identifies a desktop. Subscribe to `CurrentChanged` and then read `CurrentID` to cover both startup and later changes. The first observation has a null `OldDesktop`. UI subscribers receive events on their subscribing synchronization context. Subscribers without a context receive them on the listener thread.
 
 for WPF window
 ```csharp

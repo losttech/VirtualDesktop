@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -32,11 +28,14 @@ namespace VirtualDesktopShowcase
 		private void UpdateWindowDesktop()
 		{
 			IntPtr hwnd = new WindowInteropHelper(this).Handle;
-			var result = VirtualDesktop.TryGetIdFromHwnd(hwnd, out var desktopID);
-			if (result.Succeeded)
-				this.Title = desktopID.ToString();
-			else
-				this.Title = result.GetException().Message;
+			try
+			{
+				this.Title = VirtualDesktop.IdFromHwnd(hwnd)?.ToString() ?? "Desktop unavailable";
+			}
+			catch (Exception ex)
+			{
+				this.Title = ex.Message;
+			}
 		}
 
 		protected override void OnSourceInitialized(EventArgs e)

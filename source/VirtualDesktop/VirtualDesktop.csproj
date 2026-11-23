@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net462;net10.0-windows10.0.26100.0</TargetFrameworks>
-    <Version>0.0.9-pre0</Version>
+    <Version>0.1.0</Version>
     <LangVersion>14.0</LangVersion>
     <RootNamespace>WindowsDesktop</RootNamespace>
     <Nullable>enable</Nullable>
@@ -10,20 +10,25 @@
     <PackageId>LostTech.VirtualDesktop</PackageId>
     <Authors>grabacr.net, Victor Nova</Authors>
     <Company>Lost Tech LLC, grabacr.net</Company>
-    <Description>C# wrapper for IVirtualDesktopManager on Windows 10. You need to include the app manifest in your project so as to target Windows 10.</Description>
+    <Description>Query a window's virtual desktop, observe desktop changes, and move your application's windows using the Windows shell.</Description>
     <Copyright>© 2025 Lost Tech LLC; © 2015 Manato KAMEYA</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/losttech/VirtualDesktop</PackageProjectUrl>
     <RepositoryUrl>https://github.com/losttech/VirtualDesktop.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Windows Windows10 Desktop VirtualDesktop</PackageTags>
-    <PackageReleaseNotes>All customized APIs are declared deprecated</PackageReleaseNotes>
+    <PackageReleaseNotes>Uses the Windows SDK virtual desktop interface through CsWin32. Use IdFromHwnd in place of TryGetIdFromHwnd. Desktop queries can return null during Explorer restarts, and the Boolean IsCurrentVirtualDesktop helper returns false. CurrentChanged includes the first identified desktop.</PackageReleaseNotes>
 
     <!-- The following is recommended for public projects -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <DebugSymbols>true</DebugSymbols>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net462'">
+    <!-- CsWin32 supplies this attribute for its generated overloads. -->
+    <PolySharpExcludeGeneratedTypes>System.Runtime.CompilerServices.OverloadResolutionPriorityAttribute</PolySharpExcludeGeneratedTypes>
   </PropertyGroup>
 
   <ItemGroup>

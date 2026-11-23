@@ -7,10 +7,11 @@ namespace WindowsDesktop
 	/// </summary>
 	public class VirtualDesktopChangedEventArgs : EventArgs
 	{
-		public VirtualDesktop OldDesktop { get; }
+		/// <summary>Gets the previous desktop, or null when the first desktop is identified.</summary>
+		public VirtualDesktop? OldDesktop { get; }
 		public VirtualDesktop NewDesktop { get; }
 
-		public VirtualDesktopChangedEventArgs(VirtualDesktop oldDesktop, VirtualDesktop newDesktop)
+		public VirtualDesktopChangedEventArgs(VirtualDesktop? oldDesktop, VirtualDesktop newDesktop)
 		{
 			this.OldDesktop = oldDesktop;
 			this.NewDesktop = newDesktop;
